@@ -1,0 +1,76 @@
+---
+
+- name: Basic configuration for all servers
+  # The approach in this playbook is shared on numerous locations online, it is impossible to find the original source
+  # One source is: https://serverfault.com/questions/132970/can-i-automatically-add-a-new-host-to-known-hosts
+  hosts: all
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: ensure .ssh directory exists
+      file:
+        path: ~/.ssh
+        mode: 0700
+        state: directory
+    - name: ensure known_hosts file exists
+      copy:
+        content: ""
+        dest: ~/.ssh/known_hosts
+        mode: 0600
+    - name: "check if known_hosts contains server's fingerprint"
+      command: ssh-keygen -F {{ inventory_hostname }}
+      register: keygen
+      failed_when: keygen.stderr != ''
+      changed_when: false
+
+    - name: fetch remote ssh key
+      command: ssh-keyscan -T5 {{ inventory_hostname }}
+      register: keyscan
+      failed_when: keyscan.rc != 0 or keyscan.stdout == ''
+      changed_when: false
+      when: keygen.rc == 1
+
+    - name: add ssh-key to local known_hosts
+      lineinfile:
+        name: ~/.ssh/known_hosts
+        create: yes
+        line: "{{ item }}"
+        mode: '0600'
+      when: keygen.rc == 1
+      with_items: '{{ keyscan.stdout_lines|default([]) }}'
+
+- name: Ensure Apache is installed with the correct modules
+  hosts: web-servers
+  tasks:
+  - name: Ensure Apt is up to date
+    apt: update_cache=yes
+    become: yes
+  - name: Ensure Apache is installed
+    apt: name=apache2=2.4.29* state=present
+    become: yes
+  - name: Ensure PHP is installed
+    apt: name=php7.2=7.2.24* state=present
+    become: yes
+  - name: Ensure PHP Module for Apache is installed
+    apt: name=libapache2-mod-php7.2=7.2.24* state=present
+    become: yes
+  - name: Ensure MySql Module for Apache is installed
+    apt: name=php7.2-mysql=7.2.24* state=present
+    become: yes
+
+- name: Deploy the application-package
+  hosts: web-servers
+  tasks:
+  - name: Install PHP File
+    copy:
+      src: files/index.php
+      dest: /var/www/html/index.php
+      owner: www-data
+      group: www-data
+      mode: '0644'
+    become: yes
+  - name: Ensure default HTML file does not exist
+    file:
+      path: /var/www/html/index.html
+      state: absent
+    become: yes
