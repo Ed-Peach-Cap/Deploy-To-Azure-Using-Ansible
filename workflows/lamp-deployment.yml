@@ -1,0 +1,25 @@
+name: Lamp Deployment
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Ansible Playbook
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Linting
+      uses: ansible/ansible-lint-action@c37fb7b4bda2c8cb18f4942716bae9f11b0dc9bc
+      with:
+        targets: |
+          ansible/playbook.yml
+          ansible/inventory.yml
+
+        args: "-c ansible/.ansible-lint"
