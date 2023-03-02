@@ -1,4 +1,4 @@
-name: Lamp Deployment
+name: Deployment
 
 on:
   push:
@@ -29,7 +29,33 @@ jobs:
       with: 
       name: playbooks
       path: ansible #replace with whatever folders our ansible files are in
+      
+#Everything before this comment is fine 
+    - name: print current working directory
+    run:
+      pwd
+    - name: list directory contentd
+    run: 
+      ls -lart
+    - name: list directory contents of directory one level up
+      run: 
+        cd: ..
+        ls -lart
+    - name: Run playbook
+      uses: #insert our playbook repo
+      env: 
+        region: 
+        access_key:
+        secret_key:
+      with: 
+        playbook: ansible/deploy-ec2.yml
+        options:
+          --verbose
+      
 
+
+
+#Use space above to write the updated ansible code
 #Add deployment job to the workflow
 deploy_to_test: 
     name: Deploy to test
@@ -37,7 +63,14 @@ deploy_to_test:
     needs: linting
     
     #Test Deployment Steps
-  steps: 
+    
+    
+    
+    
+    
+    
+ #Forget alladis for the time being
+ steps: 
   - name: Download Artifact
   - uses: actions/download-artifact@v2
     with: 
