@@ -60,9 +60,9 @@ jobs:
  - name: Run playbook
       uses: #insert our playbook repo
       env: 
-        region: 
-        access_key:
-        secret_key:
+        region: ${{ vars.region }}
+        access_key: ${{ secrets.access_key }}
+        secret_key: ${{ secrets.secret_key }}
       with: 
         playbook: ansible/deploy-ec2.yml
         options:
