@@ -16,6 +16,7 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+
     - name: Linting
       uses: ansible/ansible-lint-action@c37fb7b4bda2c8cb18f4942716bae9f11b0dc9bc
       with:
@@ -40,33 +41,33 @@ jobs:
     
   #Test Deployment Steps
     steps: 
-    - name: print current working directory
-    run:
-      pwd
-    - name: list directory content
-    run: 
-      ls -lart
-    - name: list directory contents of directory one level up
-      run: 
+      - name: print current working directory
+        run:
+          pwd
+      - name: list directory content
+        run: 
+          ls -lart
+      - name: list directory contents of directory one level up
+        run: 
         cd: ..
-        ls -lart
+          ls -lart
         
-  - name: Download Artifact
-  - uses: actions/download-artifact@v2
-    with: 
-      name: playbooks
-      path: ansible
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with: 
+          name: playbooks
+          path: ansible
       
- - name: Run playbook
-      uses: #insert our playbook repo
-      env: 
-        region: ${{ vars.region }}
-        access_key: ${{ secrets.access_key }}
-        secret_key: ${{ secrets.secret_key }}
-      with: 
-        playbook: ansible/deploy-ec2.yml
-        options:
-          --verbose
+      - name: Run playbook
+        uses: #insert our playbook repo
+        env: 
+          region: ${{ vars.region }}
+          access_key: ${{ secrets.access_key }}
+          secret_key: ${{ secrets.secret_key }}
+        with: 
+          playbook: ansible/deploy-ec2.yml
+          options:
+            --verbose
       
 
 
