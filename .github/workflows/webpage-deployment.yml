@@ -24,24 +24,40 @@ jobs:
           ansible/inventory.yml
 
         args: "-c ansible/.ansible-lint"
+        #Line above stops "error" from breaking the workflow
+        
     - name: Publish Playbook Artifact
       uses: actions/upload-artifact@v2
       with: 
       name: playbooks
       path: ansible #replace with whatever folders our ansible files are in
       
-#Everything before this comment is fine 
+
+  deploy_to_test: 
+    name: Deploy to test
+    runs-on: ubuntu-latest
+    needs: linting
+    
+  #Test Deployment Steps
+    steps: 
     - name: print current working directory
     run:
       pwd
-    - name: list directory contentd
+    - name: list directory content
     run: 
       ls -lart
     - name: list directory contents of directory one level up
       run: 
         cd: ..
         ls -lart
-    - name: Run playbook
+        
+  - name: Download Artifact
+  - uses: actions/download-artifact@v2
+    with: 
+      name: playbooks
+      path: ansible
+      
+ - name: Run playbook
       uses: #insert our playbook repo
       env: 
         region: 
@@ -54,32 +70,12 @@ jobs:
       
 
 
-
-#Use space above to write the updated ansible code
-#Add deployment job to the workflow
-deploy_to_test: 
-    name: Deploy to test
-    runs-on: ubuntu-latest
-    needs: linting
-    
-    #Test Deployment Steps
-    
-    
-    
-    
-    
-    
- #Forget alladis for the time being
- steps: 
-  - name: Download Artifact
-  - uses: actions/download-artifact@v2
-    with: 
-      name: playbooks
-      path: ansible
       
-  - uses: #Get action from Ed's Ansible Playbook
-    directory: ansible #replace with whatever folders our ansible files are in
+
+   
     
-    options: 
-      --inventory inventory-test.yml #reference inventory that we created 
-      --extra-vars "test_ssh_password=${{ Secrets.TEST_SSH_PASSWORD }}"
+    
+    
+    
+    
+    
