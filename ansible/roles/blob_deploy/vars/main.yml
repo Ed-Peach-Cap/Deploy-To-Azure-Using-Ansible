@@ -7,7 +7,7 @@ azure_config_list:
   storage_acc_type: "Standard_LRS"
   blob_name: "devops_blob"
   blob_file: "hello.txt"
-  blob_file_loc: "./ansible_azure_demo/roles/blob_deploy/hello.txt"
+  blob_file_loc: "./ansible/roles/blob_deploy/hello.txt"
 
 test_vars:
   rg_name: "test-rg-demo"
