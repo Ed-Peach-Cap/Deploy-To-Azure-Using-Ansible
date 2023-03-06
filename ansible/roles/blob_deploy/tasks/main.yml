@@ -1,0 +1,25 @@
+---
+
+- hosts: localhost
+  connection: local
+  collections:
+    - azure.azcollection
+  tasks:
+{%for var in azure_config_list %}
+    - name: Create resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ var.rg_name }}"
+        location: "{{ var.rg_location }}"
+    - name: Create storage account
+      azure.azcollection.azure_rm_storageaccount:
+        resource_group: "{{ var.rg_name }}"
+        name: "{{ var.storage_acc_name }}"
+        account_type: "{{ var.storage_acc_type }}"
+    - name: Create blob container and upload 'hello world' file
+      azure.azcollection.azure_rm_storageblob:
+        resource_group: "{{ var.rg_name }}"
+        storage_account_name: "{{ var.storage_acc_name }}"
+        container: "{{ var.blob_name }}"
+        blob: "{{ var.blob_file }}"
+        src: "{{ var.blob_file_loc}}"
+{%endfor %}

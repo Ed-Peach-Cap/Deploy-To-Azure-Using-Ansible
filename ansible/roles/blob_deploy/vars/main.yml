@@ -1,0 +1,14 @@
+---
+
+azure_config_list:
+  rg_name: "rg-demo-ansible"
+  rg_location: "eastus"
+  storage_acc_name: "devops_storage"
+  storage_acc_type: "Standard_LRS"
+  blob_name: "devops_blob"
+  blob_file: "hello.txt"
+  blob_file_loc: "./ansible_azure_demo/roles/blob_deploy/hello.txt"
+
+test_vars:
+  rg_name: "test-rg-demo"
+  rg_location: "eastus"

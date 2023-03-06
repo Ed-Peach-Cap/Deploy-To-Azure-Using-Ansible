@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+  connection: local
+  collections:
+    - azure.azcollection
+  tasks:
+{%for var in test_vars %}
+    - name: Create resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ var.rg_name }}"
+        location: "{{ var.rg_location }}"
+{%endfor %}
