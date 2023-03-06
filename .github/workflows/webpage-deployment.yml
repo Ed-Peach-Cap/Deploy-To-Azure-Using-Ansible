@@ -1,9 +1,10 @@
-name: Lamp Deployment
+name: Webpage Deployment
 
 on:
   push:
     branches:
       - main
+    
   pull_request:
   workflow_dispatch:
 
@@ -15,6 +16,7 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+
     - name: Linting
       uses: ansible/ansible-lint-action@c37fb7b4bda2c8cb18f4942716bae9f11b0dc9bc
       with:
@@ -23,3 +25,58 @@ jobs:
           ansible/inventory.yml
 
         args: "-c ansible/.ansible-lint"
+        #Line above stops "error" from breaking the workflow
+        
+    - name: Publish Playbook Artifact
+      uses: actions/upload-artifact@v2
+      with: 
+      name: playbooks
+      path: ansible #replace with whatever folders our ansible files are in
+      
+
+  deploy_to_test: 
+    name: Deploy to test
+    runs-on: ubuntu-latest
+    needs: linting
+    
+  #Test Deployment Steps
+    steps: 
+      - name: print current working directory
+        run:
+          pwd
+      - name: list directory content
+        run: 
+          ls -lart
+      - name: list directory contents of directory one level up
+        run: 
+        cd: ..
+          ls -lart
+        
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with: 
+          name: playbooks
+          path: ansible
+      
+      - name: Run playbook
+        uses: #insert our playbook repo
+        env: 
+          region: ${{ vars.region }}
+          access_key: ${{ secrets.access_key }}
+          secret_key: ${{ secrets.secret_key }}
+        with: 
+          playbook: ansible/deploy-ec2.yml
+          options:
+            --verbose
+      
+
+
+      
+
+   
+    
+    
+    
+    
+    
+    
